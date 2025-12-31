@@ -8,29 +8,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --gold:#d4af37;
-  --green:#0f3d2e;
-  --dark:#070b0a;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-
 body{
-  font-family:'Poppins',sans-serif;
-  background:radial-gradient(circle at top,var(--green),var(--dark));
-  color:#fff;
-  min-height:100vh;
+  margin:0;
+  font-family:Poppins,sans-serif;
+  background:radial-gradient(circle at top,#0f3d2e,#070b0a);
+  color:white;
   display:flex;
   justify-content:center;
   align-items:center;
+  min-height:100vh;
   text-align:center;
 }
 
-.container{max-width:720px;padding:30px}
+.container{
+  max-width:720px;
+  padding:30px;
+}
 
 h1{
   font-size:2.2rem;
-  background:linear-gradient(90deg,#ffd700,var(--gold),#fff2b0);
+  background:linear-gradient(90deg,#ffd700,#d4af37,#fff2b0);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
   background-size:200%;
@@ -38,35 +35,43 @@ h1{
 }
 
 #countdown{
-  font-size:3.2rem;
-  font-weight:700;
+  font-size:3rem;
   margin:20px 0;
-  text-shadow:0 0 20px rgba(255,215,0,.8);
+  font-weight:700;
+  text-shadow:0 0 20px gold;
 }
 
-#doa{margin-top:20px;line-height:1.8}
-
-#ayat{
-  margin-top:30px;
-  font-size:1.4rem;
-  color:#fff8dc;
-  text-shadow:0 0 30px rgba(255,215,0,.9);
-  opacity:0;
-  transition:opacity 2s ease;
+#doa{
+  margin-top:20px;
+  line-height:1.8;
 }
-
-footer{margin-top:30px;font-size:.9rem;opacity:.85}
 
 #soundBtn{
-  margin-top:25px;
-  padding:12px 22px;
+  margin:25px auto;
+  padding:14px 28px;
+  font-size:1rem;
   border:none;
   border-radius:30px;
   background:linear-gradient(90deg,#ffd700,#d4af37);
   color:#000;
   font-weight:600;
   cursor:pointer;
-  box-shadow:0 0 20px rgba(255,215,0,.8);
+  box-shadow:0 0 25px rgba(255,215,0,.9);
+}
+
+#ayat{
+  margin-top:30px;
+  font-size:1.5rem;
+  color:#fff8dc;
+  text-shadow:0 0 30px rgba(255,215,0,.9);
+  opacity:0;
+  transition:opacity 2s ease;
+}
+
+footer{
+  margin-top:30px;
+  font-size:.9rem;
+  opacity:.85;
 }
 
 @keyframes gold{
@@ -81,17 +86,22 @@ footer{margin-top:30px;font-size:.9rem;opacity:.85}
 <div class="container">
   <h1 id="title">Menjelang Pergantian Tahun</h1>
   <div id="countdown">00 : 00 : 00</div>
+
   <div id="doa"></div>
 
+  <!-- TOMBOL PASTI MUNCUL -->
   <button id="soundBtn">🔊 Aktifkan Suara Ayat</button>
 
   <div id="ayat"></div>
+
   <footer id="footer"></footer>
 </div>
 
+<!-- CDN VOICE -->
 <script src="https://code.responsivevoice.org/responsivevoice.js"></script>
 
 <script>
+/* ===== DATA ===== */
 const target = new Date(new Date().getFullYear()+1,0,1,0,0,0);
 
 const doaAkhir = `
@@ -109,51 +119,49 @@ Artinya: Ya Allah, jadikan tahun ini penuh iman, amal saleh, dan keberkahan.
 `;
 
 const ayatData = [
-  {
-    arab:"فَاذْكُرُونِي أَذْكُرْكُمْ",
-    arti:"Ingatlah Aku, niscaya Aku ingat kalian"
-  },
-  {
-    arab:"إِنَّ مَعَ الْعُسْرِ يُسْرًا",
-    arti:"Sesungguhnya bersama kesulitan ada kemudahan"
-  },
-  {
-    arab:"وَمَا تَوْفِيقِي إِلَّا بِاللَّهِ",
-    arti:"Tidak ada keberhasilan kecuali dengan pertolongan Allah"
-  }
+  {arab:"فَاذْكُرُونِي أَذْكُرْكُمْ", arti:"Ingatlah Aku, niscaya Aku ingat kalian"},
+  {arab:"إِنَّ مَعَ الْعُسْرِ يُسْرًا", arti:"Sesungguhnya bersama kesulitan ada kemudahan"},
+  {arab:"وَمَا تَوْفِيقِي إِلَّا بِاللَّهِ", arti:"Tidak ada keberhasilan kecuali dengan pertolongan Allah"}
 ];
 
 let idx=0;
-let audioAllowed=false;
-const ayatEl=document.getElementById("ayat");
+let audioEnabled=false;
 
-document.getElementById("soundBtn").onclick=()=>{
-  audioAllowed=true;
-  document.getElementById("soundBtn").style.display="none";
+const ayatEl=document.getElementById("ayat");
+const soundBtn=document.getElementById("soundBtn");
+
+/* AKTIFKAN AUDIO */
+soundBtn.onclick=function(){
+  audioEnabled=true;
+  soundBtn.innerHTML="✅ Suara Aktif";
+  soundBtn.disabled=true;
 };
 
+/* AYAT ROTATE */
 function rotateAyat(){
   ayatEl.style.opacity=0;
   setTimeout(()=>{
     ayatEl.innerHTML=`
-      <div style="font-size:1.6rem">${ayatData[idx].arab}</div>
+      <div>${ayatData[idx].arab}</div>
       <small>${ayatData[idx].arti}</small>
     `;
     ayatEl.style.opacity=1;
 
-    if(audioAllowed){
+    if(audioEnabled){
       responsiveVoice.speak(
         ayatData[idx].arab,
         "Arabic Male",
         {rate:0.8}
       );
     }
+
     idx=(idx+1)%ayatData.length;
-  },2000);
+  },1500);
 }
 setInterval(rotateAyat,9000);
 rotateAyat();
 
+/* COUNTDOWN */
 const cd=document.getElementById("countdown");
 const doa=document.getElementById("doa");
 const title=document.getElementById("title");
