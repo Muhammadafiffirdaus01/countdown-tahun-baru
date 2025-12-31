@@ -19,37 +19,27 @@ body{
   align-items:center;
   text-align:center;
 }
-
 .container{max-width:720px;padding:30px}
-
 h1{
   font-size:2.2rem;
   color:#e6c87a;
-  text-shadow:0 0 20px rgba(230,200,122,.4);
+  text-shadow:0 0 18px rgba(230,200,122,.4);
 }
-
 #countdown{
   font-size:3rem;
   margin:20px 0;
   font-weight:700;
   color:#ffd700;
 }
-
-#doa{
-  margin-top:20px;
-  line-height:1.9;
-  font-size:1rem;
-}
-
+#doa{margin-top:20px;line-height:1.9}
 #ayat{
   margin-top:35px;
   font-size:1.6rem;
   color:#fff4c2;
   text-shadow:0 0 25px rgba(255,215,120,.6);
   opacity:0;
-  transition:opacity 3s ease;
+  transition:opacity 2.5s ease;
 }
-
 #startBtn{
   margin:30px auto;
   padding:14px 30px;
@@ -62,12 +52,7 @@ h1{
   cursor:pointer;
   box-shadow:0 0 30px rgba(255,215,120,.6);
 }
-
-footer{
-  margin-top:35px;
-  font-size:.9rem;
-  opacity:.8;
-}
+footer{margin-top:35px;font-size:.9rem;opacity:.8}
 </style>
 </head>
 
@@ -91,40 +76,68 @@ footer{
   </footer>
 </div>
 
-<!-- MUROTAL STREAM -->
-<audio id="murotal" loop>
-  <source src="https://archive.org/download/quran-mishary-rashid-alafasy/001.mp3" type="audio/mpeg">
-</audio>
+<!-- AUDIO ASLI QARI (BUKAN AI) -->
+<audio id="audio"></audio>
 
 <script>
+/* TARGET TAHUN BARU */
 const target = new Date(new Date().getFullYear()+1,0,1,0,0,0);
 
-const ayatList=[
-"فَاذْكُرُونِي أَذْكُرْكُمْ",
-"إِنَّ مَعَ الْعُسْرِ يُسْرًا",
-"وَمَا تَوْفِيقِي إِلَّا بِاللَّهِ"
+/* AYAT + AUDIO ASLI */
+const ayatData = [
+  {
+    arab:"فَاذْكُرُونِي أَذْكُرْكُمْ",
+    arti:"Ingatlah Aku, niscaya Aku ingat kalian",
+    audio:"https://everyayah.com/data/Alafasy_128kbps/002152.mp3" // Al-Baqarah 152
+  },
+  {
+    arab:"إِنَّ مَعَ الْعُسْرِ يُسْرًا",
+    arti:"Sesungguhnya bersama kesulitan ada kemudahan",
+    audio:"https://everyayah.com/data/Alafasy_128kbps/094006.mp3" // Al-Insyirah 6
+  },
+  {
+    arab:"وَمَا تَوْفِيقِي إِلَّا بِاللَّهِ",
+    arti:"Tidak ada keberhasilan kecuali dengan pertolongan Allah",
+    audio:"https://everyayah.com/data/Alafasy_128kbps/011088.mp3" // Hud 88
+  }
 ];
 
 let idx=0;
+let started=false;
 const ayatEl=document.getElementById("ayat");
-const murotal=document.getElementById("murotal");
+const audio=document.getElementById("audio");
 
+/* MULAI */
 document.getElementById("startBtn").onclick=()=>{
-  murotal.play().catch(()=>{});
+  started=true;
   document.getElementById("startBtn").style.display="none";
+  playAyat();
 };
 
-function rotateAyat(){
-  ayatEl.style.opacity=0;
-  setTimeout(()=>{
-    ayatEl.innerHTML=ayatList[idx];
-    ayatEl.style.opacity=1;
-    idx=(idx+1)%ayatList.length;
-  },3000);
-}
-setInterval(rotateAyat,12000);
-rotateAyat();
+/* MAIN AYAT */
+function playAyat(){
+  if(!started) return;
 
+  ayatEl.style.opacity=0;
+
+  setTimeout(()=>{
+    ayatEl.innerHTML=`
+      <div>${ayatData[idx].arab}</div>
+      <small>${ayatData[idx].arti}</small>
+    `;
+    ayatEl.style.opacity=1;
+
+    audio.src = ayatData[idx].audio;
+    audio.play().catch(()=>{});
+
+    audio.onended = ()=>{
+      idx = (idx+1) % ayatData.length;
+      setTimeout(playAyat,3000);
+    };
+  },2000);
+}
+
+/* COUNTDOWN */
 const cd=document.getElementById("countdown");
 const title=document.getElementById("title");
 const doa=document.getElementById("doa");
