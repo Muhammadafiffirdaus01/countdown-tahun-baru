@@ -4,160 +4,183 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Countdown Tahun Baru Islami</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+
+:root{
+  --gold1:#d4af37;
+  --gold2:#ffd700;
+  --green:#0f3d2e;
+  --dark:#0b0f0e;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
 body{
+  font-family:'Poppins',sans-serif;
+  background:radial-gradient(circle at top,var(--green),var(--dark));
+  color:#fff;
   min-height:100vh;
-  background:radial-gradient(circle at top,#0f3d2e,#020b08);
-  display:flex;align-items:center;justify-content:center;
-  color:#f5f5f5;overflow:hidden;text-align:center;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
 }
-.card{
-  background:rgba(0,0,0,.55);
-  backdrop-filter:blur(16px);
-  border:1px solid rgba(212,175,55,.35);
-  padding:26px 22px;
-  border-radius:24px;
-  width:92%;max-width:460px;
-  box-shadow:0 30px 60px rgba(0,0,0,.7);
-  z-index:2;
+
+.container{
+  max-width:720px;
+  padding:30px;
+  animation:fadeIn 2s ease;
 }
-h1{font-size:1.7rem;color:#d4af37;margin-bottom:6px}
-.subtitle{font-size:.85rem;opacity:.9;margin-bottom:14px}
-.timer{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
-.box{background:rgba(15,61,46,.6);padding:14px 6px;border-radius:16px;border:1px solid rgba(212,175,55,.25)}
-.box span{font-size:1.55rem;font-weight:700;display:block;color:#d4af37}
-.box small{font-size:.7rem;opacity:.85}
 
-.newyear{display:none;font-size:1.9rem;font-weight:700;margin-bottom:10px;color:#ffd700;animation:glow 1.2s infinite alternate}
+h1{
+  font-size:2.2rem;
+  margin-bottom:10px;
+  background:linear-gradient(90deg,var(--gold1),var(--gold2),var(--gold1));
+  background-size:200%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:goldMove 4s linear infinite;
+}
 
-.doa-box{margin-top:12px;font-size:.78rem;line-height:1.6;opacity:.95}
-.arab{font-size:1rem;line-height:1.9;direction:rtl;color:#e8f6ef}
-.latin{font-style:italic;margin-top:4px;color:#cfe9dc}
-.arti{margin-top:6px;opacity:.85}
+#countdown{
+  font-size:3.2rem;
+  font-weight:700;
+  margin:20px 0;
+  text-shadow:0 0 15px rgba(255,215,0,.6);
+  transition:all .5s ease;
+}
 
-.ayat{margin-top:14px;font-size:.85rem;line-height:1.7;opacity:0;transition:opacity 2s}
-.ayat.show{opacity:1}
+#doa{
+  margin-top:20px;
+  font-size:1.05rem;
+  line-height:1.7;
+  animation:fadeIn 2s ease;
+}
 
-.footer{margin-top:12px;font-size:.7rem;opacity:.8;color:#d4af37}
+#ayat{
+  margin-top:30px;
+  font-size:1.2rem;
+  font-style:italic;
+  color:#ffd;
+  text-shadow:0 0 20px rgba(255,215,0,.8);
+  opacity:0;
+  transition:opacity 2s ease;
+}
 
-@keyframes glow{from{text-shadow:0 0 6px #ffd700}to{text-shadow:0 0 24px #ffd700}}
-canvas{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1;pointer-events:none}
-audio{display:none}
+footer{
+  margin-top:30px;
+  font-size:.9rem;
+  color:#ddd;
+  opacity:.9;
+}
+
+/* Animations */
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(15px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes goldMove{
+  from{background-position:0%}
+  to{background-position:200%}
+}
 </style>
 </head>
+
 <body>
-<canvas id="fireworks"></canvas>
 
-<div class="card">
-<h1>⏳ Menuju Tahun Baru</h1>
-<div class="subtitle">Muhasabah & doa menyambut waktu baru ✨</div>
+<div class="container">
+  <h1 id="title">Menjelang Pergantian Tahun</h1>
 
-<div id="countdown" class="timer">
-<div class="box"><span id="days">0</span><small>Hari</small></div>
-<div class="box"><span id="hours">0</span><small>Jam</small></div>
-<div class="box"><span id="minutes">0</span><small>Menit</small></div>
-<div class="box"><span id="seconds">0</span><small>Detik</small></div>
+  <div id="countdown">00 : 00 : 00</div>
+
+  <div id="doa"></div>
+
+  <div id="ayat"></div>
+
+  <footer id="footerText"></footer>
 </div>
 
-<div id="happy" class="newyear">🎉 Selamat Tahun Baru 🎉</div>
-
-<div id="doa" class="doa-box">
-<div class="arab"></div>
-<div class="latin"></div>
-<div class="arti"></div>
-</div>
-
-<div id="ayat" class="ayat"></div>
-
-<div id="footer" class="footer"></div>
-</div>
-
-<audio id="bgm" loop>
-<source src="https://cdn.pixabay.com/audio/2023/10/31/audio_6b5b9a0d90.mp3" type="audio/mpeg">
+<!-- Musik Takbir -->
+<audio id="takbir" loop>
+  <source src="takbir-makkah.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-const bgm=document.getElementById('bgm');
-document.body.addEventListener('click',()=>bgm.play(),{once:true});
+/* ====== TARGET TAHUN BARU ====== */
+const targetDate = new Date(new Date().getFullYear()+1,0,1,0,0,0);
 
-const doaAkhir={
- arab:"اللّٰهُمَّ مَا عَمِلْتُ فِي هٰذِهِ السَّنَةِ مِمَّا نَهَيْتَنِي عَنْهُ فَلَمْ أَتُبْ مِنْهُ",
- latin:"Allahumma maa ‘amiltu fii haadzihis sanati mimmaa nahaitanii ‘anhu falam atub minhu",
- arti:"Ya Allah, apa saja dosa yang aku lakukan di tahun ini dan belum sempat aku taubati, maka ampunilah aku.",
- footer:"Semoga Allah mengampuni dosa-dosa di tahun yang telah berlalu."
-};
+/* ====== DOA ====== */
+const doaAkhir = `
+<b>Doa Akhir Tahun</b><br><br>
+اللَّهُمَّ مَا عَمِلْتُ فِي هَذِهِ السَّنَةِ مِمَّا نَهَيْتَنِي عَنْهُ فَلَمْ أَتُبْ مِنْهُ...<br><br>
+<i>Allahumma maa ‘amiltu fii haadzihis-sanati mimmaa nahaitanii ‘anhu...</i><br><br>
+Artinya: Ya Allah, ampunilah dosa-dosaku di tahun yang telah berlalu.
+`;
 
-const doaAwal={
- arab:"اللّٰهُمَّ أَنْتَ الْأَبَدِيُّ الْقَدِيمُ وَهٰذِهِ سَنَةٌ جَدِيْدَةٌ",
- latin:"Allahumma antal abadiyyul qadiim wa haadzihis sanatun jadiidah",
- arti:"Ya Allah, Engkau Yang Maha Kekal, dan ini adalah tahun yang baru. Jadikanlah aku lebih taat kepada-Mu.",
- footer:"Semoga tahun baru dipenuhi iman, amal saleh, dan keberkahan."
-};
+const doaAwal = `
+<b>Doa Awal Tahun</b><br><br>
+اللَّهُمَّ أَنْتَ الْأَبَدِيُّ الْقَدِيمُ الْأَوَّلُ...<br><br>
+<i>Allahumma antal-abadiyyul-qadiimul-awwal...</i><br><br>
+Artinya: Ya Allah, jadikan tahun ini penuh iman, amal saleh, dan keberkahan.
+`;
 
-const ayatList=[
-"إِنَّ اللّٰهَ لَا يُغَيِّرُ مَا بِقَوْمٍ حَتَّىٰ يُغَيِّرُوا مَا بِأَنفُسِهِمْ (QS. Ar-Ra’d: 11)",
-"وَأَنْ لَيْسَ لِلْإِنْسَانِ إِلَّا مَا سَعَىٰ (QS. An-Najm: 39)",
-"فَإِذَا فَرَغْتَ فَانْصَبْ • وَإِلَىٰ رَبِّكَ فَارْغَبْ (QS. Al-Insyirah: 7–8)"
+/* ====== AYAT FADE ====== */
+const ayatList = [
+"إِنَّ مَعَ الْعُسْرِ يُسْرًا<br><small>Sesungguhnya bersama kesulitan ada kemudahan</small>",
+"فَاذْكُرُونِي أَذْكُرْكُمْ<br><small>Ingatlah Aku, niscaya Aku ingat kalian</small>",
+"وَمَا تَوْفِيقِي إِلَّا بِاللَّهِ<br><small>Tidak ada keberhasilan kecuali dengan pertolongan Allah</small>"
 ];
 
-function setDoa(d){
- document.querySelector('.arab').innerText=d.arab;
- document.querySelector('.latin').innerText=d.latin;
- document.querySelector('.arti').innerText=d.arti;
- document.getElementById('footer').innerText=d.footer;
-}
+let ayatIndex = 0;
+const ayatEl = document.getElementById("ayat");
 
-let ayatIndex=0;
 function rotateAyat(){
- const ayat=document.getElementById('ayat');
- ayat.classList.remove('show');
- setTimeout(()=>{
-   ayat.innerText=ayatList[ayatIndex];
-   ayat.classList.add('show');
-   ayatIndex=(ayatIndex+1)%ayatList.length;
- },2000);
+  ayatEl.style.opacity = 0;
+  setTimeout(()=>{
+    ayatEl.innerHTML = ayatList[ayatIndex];
+    ayatEl.style.opacity = 1;
+    ayatIndex = (ayatIndex+1) % ayatList.length;
+  },2000);
 }
 setInterval(rotateAyat,8000);
 rotateAyat();
 
-const nextYear=new Date(new Date().getFullYear()+1,0,1).getTime();
-const timer=setInterval(()=>{
- const now=new Date().getTime();
- const d=nextYear-now;
- if(d<=0){
-  clearInterval(timer);
-  document.getElementById('countdown').style.display='none';
-  document.getElementById('happy').style.display='block';
-  setDoa(doaAwal);
-  startFireworks();
-  return;
- }
- setDoa(doaAkhir);
- days.innerText=Math.floor(d/(1000*60*60*24));
- hours.innerText=Math.floor((d%(1000*60*60*24))/(1000*60*60));
- minutes.innerText=Math.floor((d%(1000*60*60))/(1000*60));
- seconds.innerText=Math.floor((d%(1000*60))/1000);
-},1000);
+/* ====== COUNTDOWN ====== */
+const cd = document.getElementById("countdown");
+const doaEl = document.getElementById("doa");
+const title = document.getElementById("title");
+const footer = document.getElementById("footerText");
+const takbir = document.getElementById("takbir");
 
-const canvas=document.getElementById('fireworks');
-const ctx=canvas.getContext('2d');
-canvas.width=innerWidth;canvas.height=innerHeight;
-function startFireworks(){
- setInterval(()=>{
-  const x=Math.random()*canvas.width;
-  const y=Math.random()*canvas.height/2;
-  for(let i=0;i<30;i++){
-   ctx.beginPath();
-   ctx.arc(x,y,Math.random()*3,0,Math.PI*2);
-   ctx.fillStyle=`hsl(${Math.random()*360},100%,60%)`;
-   ctx.fill();
+function update(){
+  const now = new Date();
+  const diff = targetDate - now;
+
+  if(diff <= 0){
+    cd.innerHTML = "🎉 00 : 00 : 00";
+    title.innerHTML = "🎉 Selamat Tahun Baru";
+    doaEl.innerHTML = doaAwal;
+    footer.innerHTML = "Semoga tahun baru dipenuhi iman, amal saleh, dan keberkahan.";
+    takbir.play().catch(()=>{});
+    return;
   }
- },450);
-}
 
-onresize=()=>{canvas.width=innerWidth;canvas.height=innerHeight};
+  const h = String(Math.floor(diff/3600000)).padStart(2,'0');
+  const m = String(Math.floor(diff%3600000/60000)).padStart(2,'0');
+  const s = String(Math.floor(diff%60000/1000)).padStart(2,'0');
+
+  cd.innerHTML = `${h} : ${m} : ${s}`;
+  doaEl.innerHTML = doaAkhir;
+  footer.innerHTML = "Semoga Allah mengampuni dosa-dosa di tahun yang telah berlalu.";
+}
+setInterval(update,1000);
+update();
+
+/* Klik layar untuk mulai audio (mobile safe) */
+document.body.addEventListener('click',()=>takbir.play().catch(()=>{}),{once:true});
 </script>
+
 </body>
 </html>
