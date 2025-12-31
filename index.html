@@ -2,64 +2,87 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Refleksi Pergantian Tahun</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@600&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
 
 <style>
-body{
+html,body{
   margin:0;
+  padding:0;
+  height:100%;
+  background:radial-gradient(circle at top,#0b2a1f,#020403);
   font-family:Poppins,sans-serif;
-  background:radial-gradient(circle at top,#0f3d2e,#050807);
   color:#f5f5f5;
-  min-height:100vh;
+  overflow:hidden;
+}
+
+.container{
+  height:100%;
   display:flex;
+  flex-direction:column;
   justify-content:center;
   align-items:center;
   text-align:center;
+  padding:24px;
 }
-.container{max-width:720px;padding:30px}
+
 h1{
-  font-size:2.2rem;
-  color:#e6c87a;
-  text-shadow:0 0 18px rgba(230,200,122,.4);
+  font-size:1.9rem;
+  color:#e7c873;
+  text-shadow:0 0 25px rgba(231,200,115,.45);
+  margin-bottom:14px;
 }
+
 #countdown{
-  font-size:3rem;
-  margin:20px 0;
-  font-weight:700;
-  color:#ffd700;
-}
-#doa{margin-top:20px;line-height:1.9}
-#ayat{
-  margin-top:35px;
-  font-size:1.6rem;
-  color:#fff4c2;
-  text-shadow:0 0 25px rgba(255,215,120,.6);
-  opacity:0;
-  transition:opacity 2.5s ease;
-}
-#startBtn{
-  margin:30px auto;
-  padding:14px 30px;
-  font-size:1rem;
-  border:none;
-  border-radius:40px;
-  background:linear-gradient(90deg,#d4af37,#f6e27f);
-  color:#000;
+  font-size:2.8rem;
   font-weight:600;
-  cursor:pointer;
-  box-shadow:0 0 30px rgba(255,215,120,.6);
+  color:#ffd700;
+  letter-spacing:2px;
+  margin-bottom:22px;
 }
-footer{margin-top:35px;font-size:.9rem;opacity:.8}
+
+#doa{
+  font-size:.95rem;
+  line-height:1.9;
+  opacity:.9;
+  max-width:680px;
+}
+
+#ayat{
+  margin-top:36px;
+  font-family:'Scheherazade New',serif;
+  font-size:1.8rem;
+  color:#fff2c6;
+  text-shadow:
+    0 0 15px rgba(255,215,140,.6),
+    0 0 35px rgba(255,215,140,.3);
+  opacity:0;
+  transition:opacity 3s ease;
+}
+
+#arti{
+  margin-top:8px;
+  font-size:.9rem;
+  opacity:.85;
+}
+
+footer{
+  position:absolute;
+  bottom:16px;
+  font-size:.8rem;
+  opacity:.65;
+  max-width:90%;
+}
 </style>
 </head>
 
 <body>
 
 <div class="container">
-  <h1 id="title">Menjelang Pergantian Tahun</h1>
+  <h1 id="title"></h1>
+
   <div id="countdown">00 : 00 : 00</div>
 
   <div id="doa">
@@ -67,100 +90,112 @@ footer{margin-top:35px;font-size:.9rem;opacity:.8}
     Ya Allah, ampunilah dosa-dosa kami di tahun yang telah berlalu.
   </div>
 
-  <button id="startBtn">🕌 Mulai Dzikir & Murotal</button>
-
   <div id="ayat"></div>
+  <div id="arti"></div>
 
   <footer id="footer">
     Semoga Allah mengampuni dosa-dosa di tahun yang telah berlalu.
   </footer>
 </div>
 
-<!-- AUDIO ASLI QARI (BUKAN AI) -->
-<audio id="audio"></audio>
+<audio id="audio" preload="auto"></audio>
 
 <script>
-/* TARGET TAHUN BARU */
-const target = new Date(new Date().getFullYear()+1,0,1,0,0,0);
+/* =====================
+   TAHUN OTOMATIS
+===================== */
+const nowYear = new Date().getFullYear();
+const nextYear = nowYear + 1;
+const target = new Date(nextYear,0,1,0,0,0);
 
-/* AYAT + AUDIO ASLI */
+/* =====================
+   AYAT & QARI ASLI
+===================== */
 const ayatData = [
   {
     arab:"فَاذْكُرُونِي أَذْكُرْكُمْ",
     arti:"Ingatlah Aku, niscaya Aku ingat kalian",
-    audio:"https://everyayah.com/data/Alafasy_128kbps/002152.mp3" // Al-Baqarah 152
+    audio:"https://everyayah.com/data/Alafasy_128kbps/002152.mp3"
   },
   {
     arab:"إِنَّ مَعَ الْعُسْرِ يُسْرًا",
     arti:"Sesungguhnya bersama kesulitan ada kemudahan",
-    audio:"https://everyayah.com/data/Alafasy_128kbps/094006.mp3" // Al-Insyirah 6
+    audio:"https://everyayah.com/data/Alafasy_128kbps/094006.mp3"
   },
   {
     arab:"وَمَا تَوْفِيقِي إِلَّا بِاللَّهِ",
     arti:"Tidak ada keberhasilan kecuali dengan pertolongan Allah",
-    audio:"https://everyayah.com/data/Alafasy_128kbps/011088.mp3" // Hud 88
+    audio:"https://everyayah.com/data/Alafasy_128kbps/011088.mp3"
   }
 ];
 
 let idx=0;
-let started=false;
-const ayatEl=document.getElementById("ayat");
+let activated=false;
+
 const audio=document.getElementById("audio");
-
-/* MULAI */
-document.getElementById("startBtn").onclick=()=>{
-  started=true;
-  document.getElementById("startBtn").style.display="none";
-  playAyat();
-};
-
-/* MAIN AYAT */
-function playAyat(){
-  if(!started) return;
-
-  ayatEl.style.opacity=0;
-
-  setTimeout(()=>{
-    ayatEl.innerHTML=`
-      <div>${ayatData[idx].arab}</div>
-      <small>${ayatData[idx].arti}</small>
-    `;
-    ayatEl.style.opacity=1;
-
-    audio.src = ayatData[idx].audio;
-    audio.play().catch(()=>{});
-
-    audio.onended = ()=>{
-      idx = (idx+1) % ayatData.length;
-      setTimeout(playAyat,3000);
-    };
-  },2000);
-}
-
-/* COUNTDOWN */
+const ayatEl=document.getElementById("ayat");
+const artiEl=document.getElementById("arti");
+const titleEl=document.getElementById("title");
 const cd=document.getElementById("countdown");
-const title=document.getElementById("title");
 const doa=document.getElementById("doa");
 const footer=document.getElementById("footer");
 
+/* =====================
+   TAP SEKALI = MULAI
+===================== */
+document.body.addEventListener("click",()=>{
+  if(!activated){
+    activated=true;
+    playAyat();
+  }
+},{once:true});
+
+/* =====================
+   AYAT BERGANTIAN
+===================== */
+function playAyat(){
+  ayatEl.style.opacity=0;
+  artiEl.style.opacity=0;
+
+  setTimeout(()=>{
+    ayatEl.innerHTML=ayatData[idx].arab;
+    artiEl.innerHTML=ayatData[idx].arti;
+    ayatEl.style.opacity=1;
+    artiEl.style.opacity=.85;
+
+    audio.src=ayatData[idx].audio;
+    audio.play().catch(()=>{});
+
+    audio.onended=()=>{
+      idx=(idx+1)%ayatData.length;
+      setTimeout(playAyat,4000);
+    };
+  },2500);
+}
+
+/* =====================
+   COUNTDOWN & JUDUL
+===================== */
 function update(){
   const now=new Date();
   const diff=target-now;
 
   if(diff<=0){
-    cd.innerHTML="🎉 00 : 00 : 00";
-    title.innerHTML="🌙 Selamat Tahun Baru";
-    doa.innerHTML="<b>Doa Awal Tahun</b><br><br>Ya Allah, berkahilah kami di tahun ini.";
+    cd.innerHTML="00 : 00 : 00";
+    titleEl.innerHTML=`🌙 Selamat Datang Tahun ${nextYear}`;
+    doa.innerHTML="<b>Doa Awal Tahun</b><br><br>Ya Allah, jadikan tahun ini penuh iman, amal saleh, dan keberkahan.";
     footer.innerHTML="Semoga tahun baru dipenuhi iman, amal saleh, dan keberkahan.";
     return;
   }
 
+  titleEl.innerHTML=`Menjelang Pergantian Tahun ${nowYear} ke ${nextYear}`;
+
   const h=String(Math.floor(diff/3600000)).padStart(2,'0');
   const m=String(Math.floor(diff%3600000/60000)).padStart(2,'0');
   const s=String(Math.floor(diff%60000/1000)).padStart(2,'0');
-
   cd.innerHTML=`${h} : ${m} : ${s}`;
 }
+
 setInterval(update,1000);
 update();
 </script>
